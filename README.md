@@ -76,6 +76,7 @@ No backend, no server — everything runs locally in the extension.
 - Only syncs books added **after** the extension is installed (no backfill, if you are interested in a version that updates all previous info, let me know! I actually created that before this, but this suits my personal needs better)
 - Goodreads shut down their public API in 2020, so RSS is the only option
 - Rating uses whatever select options you've set up in Notion, so make sure they match exactly
+- Unreleased shelf will only tag when Goodreads RSS includes a publication date
 
 ---
 
