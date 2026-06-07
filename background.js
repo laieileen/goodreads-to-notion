@@ -78,11 +78,19 @@ async function runSync() {
         for (const book of books) {
           const uniqueKey = book.id;
           if (syncedSet.has(uniqueKey)) continue;
-          if (installedAt && book.dateAdded && new Date(book.dateAdded) < new Date(installedAt)) continue;
-          await addToNotion({ notionKey, notionDb, book, status: SHELF_STATUS_MAP[shelf] });
+        if (installedAt && book.dateAdded) {
+          const installedDate = new Date(installedAt).toISOString().split('T')[0];
+          const bookDate = new Date(book.dateAdded).toISOString().split('T')[0];
+          if (bookDate < installedDate) continue;
+        }          
+        const status = SHELF_STATUS_MAP[shelf] === 'TBR' && book.isUnreleased
+          ? 'Unreleased'
+          : SHELF_STATUS_MAP[shelf];
 
-          syncedSet.add(uniqueKey);
-          newlySynced.push(book.title);
+        await addToNotion({ notionKey, notionDb, book, status });
+
+        syncedSet.add(uniqueKey);
+        newlySynced.push(book.title);
         }
       } catch (err) {
         console.error(`Error syncing shelf "${shelf}":`, err.message);
@@ -135,6 +143,17 @@ function parseBookItem(getText) {
   const rawSeries = decodeEntities(getText('book_series'));
   const dateAdded = getText('user_date_added');
 
+  const pubYear  = getText('publication_year');
+  const pubMonth = getText('publication_month') || '1';
+  const pubDay   = getText('publication_day') || '1';
+
+  let isUnreleased = false;
+  if (pubYear) 
+  {
+    const pubDate = new Date(`${pubYear}-${pubMonth.padStart(2,'0')}-${pubDay.padStart(2,'0')}`);
+    isUnreleased = pubDate > new Date();
+  }
+
 
   // Extract series from title e.g. "Icebreaker (Maple Hills, #1)" → title: "Icebreaker", series: "Maple Hills"
   const titleSeriesMatch = rawTitle.match(/^(.*?)\s*\(([^)]+?)(?:,?\s*#[\d.][\d.-]*)?\)$/);
@@ -154,7 +173,7 @@ function parseBookItem(getText) {
     ? parseGoodreadsDate(readAt)
     : new Date().toISOString().split('T')[0];
 
-  return { id, title, author, series: seriesClean, ratingStars, ratingNum, finishedDate, bookUrl, dateAdded };
+  return { id, title, author, series: seriesClean, ratingStars, ratingNum, finishedDate, bookUrl, dateAdded, isUnreleased };
 }
 
 function parseGoodreadsDate(dateStr) {
