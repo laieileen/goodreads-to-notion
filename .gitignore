@@ -1,0 +1,11 @@
+# Mac system files (created automatically, not your code)
+.DS_Store
+
+# VS Code settings folder
+.vscode/
+
+# Node modules if you ever add a build step
+node_modules/
+
+# Zip files (people should load unpacked, not download a zip)
+*.zip
