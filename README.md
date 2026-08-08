@@ -1,6 +1,6 @@
 # Goodreads to Notion
 
-A Chrome extension that automatically syncs your Goodreads shelves to a Notion reading database — no manual logging required.
+A Chrome extension that automatically syncs your Goodreads shelves to a Notion reading database without manual logging.
 
 ![Goodreads to Notion popup screenshot](screenshots/setup%20screen.png)
 
